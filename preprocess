@@ -1,0 +1,23 @@
+from scipy.signal import butter, filtfilt, welch, detrend
+def bandpass(data, lowcut=1, highcut=30, fs=250, order=5):
+    nyq = 0.5 * fs
+    b, a = butter(order, [lowcut/nyq, highcut/nyq], btype='band')
+    return filtfilt(b, a, data)
+
+def preprocess_trial(trial):
+    return np.array([bandpass(detrend(ch)) for ch in trial])
+
+def extract_fft(trial, fs=250):
+    features = []
+    for ch in trial:
+        freqs, psd = welch(ch, fs=fs, nperseg=128)
+        features.extend(psd[:20])
+    return features
+
+fft_features = []
+for trial in eeg_data:
+    filtered = preprocess_trial(trial)
+    fft_features.append(extract_fft(filtered))
+
+X_real = np.array(fft_features)
+print("FFT Feature Matrix Shape:", X_real.shape)
