@@ -23,3 +23,4 @@ def run_cca(trial, ref_signals):
     return np.argmax(corrs)
 
 cca_preds = np.array([run_cca(trial, ref_signals) for trial in eeg_data]).reshape(-1, 1)
+X_combined = np.hstack((fft_features, cca_preds))
